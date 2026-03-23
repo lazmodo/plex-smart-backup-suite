@@ -1,0 +1,10 @@
+# General Ignore
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
+
+# Script-Specific Ignore
+Backups/
+.tmp_*/
+credentials.txt
