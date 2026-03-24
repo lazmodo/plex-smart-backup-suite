@@ -1,52 +1,246 @@
 # Plex Smart Backup Suite
 
-Fast, WAL-safe Plex backups with hourly snapshots, GFS rotation, and validated restore scripts.
+Fast, WAL-safe Plex backups with hourly snapshots, GFS rotation, and validated restore scripts. It is designed to have the plexdata and backup folders on SSDs. 
 
 ---
 
 ## 🚀 Features
 
-* ⚡ Ultra-fast hourly backups (1–3 seconds)
-* 🔒 SQLite WAL-safe (no corruption, no downtime)
-* ✅ Automatic validation before restore
-* 🛟 Emergency rollback protection
-* 🐳 Designed for Docker + Unraid
+* ⚡ **Ultra-fast hourly backups** (WAL snapshot method, no downtime)
+* 🗓️ **GFS rotation backups** (Daily / Weekly / Monthly using SQLite `.backup`)
+* 🔍 **Automated backup validation**
+
+  * Hourly snapshot validation (daily health check)
+  * Restore-time integrity verification
+* 🔄 **Multiple restore options**
+
+  * Auto-restore from latest valid snapshot
+  * Restore from GFS archives
+  * Targeted restore (specific hour or archive)
+* 🛟 **Built-in safety mechanisms**
+
+  * Pre-restore emergency backups
+  * SQLite integrity checks
+  * Optional WAL checkpointing
+* 🔔 Optional Unraid notifications
+* 🧩 Modular scripts (use independently or together)
 
 ---
 
-## 📦 Included Scripts
+## 📂 Scripts Overview
 
-| Script                    | Purpose                                    |
-| ------------------------- | ------------------------------------------ |
-| Plex-Hourly-Backup.sh     | Creates rolling hourly snapshots           |
-| Plex_Hourly_Restore.sh    | Finds and restores the newest valid backup |
+### 🔁 Hourly Backups
+
+| Script                      | Description                                              |
+| --------------------------- | -------------------------------------------------------- |
+| `Plex_Hourly_Backup.sh`     | Creates fast hourly database snapshots using WAL         |
+| `Plex_Hourly_Restore.sh` | Automatically restores from latest valid hourly snapshot |
+
+---
+
+### 🗄️ GFS Backups (Daily / Weekly / Monthly)
+
+| Script                 | Description                                                                            |
+| ---------------------- | -------------------------------------------------------------------------------------- |
+| `Plex_Daily_Backups.sh` | Creates compressed daily backups using SQLite `.backup`, with weekly/monthly promotion |
+| `Plex_Daily_Restore.sh`  | Scans and restores from the latest valid GFS archive                                   |
+
+---
+
+### 🔍 Backup Validation
+
+| Script                       | Description                                                   |
+| ---------------------------- | ------------------------------------------------------------- |
+| `Plex-Hourly-Healthcheck.sh` | Validates all 24 hourly backups using SQLite integrity checks |
+
+---
+
+### 🎯 Targeted Restore Tools
+
+| Script                     | Description                                                                    |
+| -------------------------- | ------------------------------------------------------------------------------ |
+| `Plex-Restore-Specific.sh` | Selects and prepares a specific backup (hourly or daily) for restore workflows |
+
+---
+
+## 🧠 Backup Strategy
+
+This project implements a **layered backup approach**:
+
+* **Hourly snapshots**
+
+  * Fast, lightweight, near real-time recovery
+* **Daily GFS backups**
+
+  * Reliable, portable, long-term storage
+* **Validation layer**
+
+  * Ensures backups are actually usable before restore
+
+> Plex does not provide a complete backup system out of the box, so combining multiple strategies is essential for reliable recovery. ([GitHub][1])
+
+---
+
+## 🔄 Example Workflows
+
+### Hourly Recovery (Fastest)
+
+```bash
+Plex_Hourly_Restore.sh
+```
+
+---
+
+### Restore from Daily Backup
+
+```bash
+Plex_Daily_Restore.sh
+```
+
+---
+
+### Restore Specific Backup
+
+```bash
+Plex-Restore-Specific.sh hourly 14
+Plex-Restore-Specific.sh daily plex-db-2026-03-23.tar
+```
+
+---
+
+### Validate Backups
+
+```bash
+Plex-Hourly-Healthcheck.sh
+```
+
+---
+
+## ⚙️ Usage (Unraid)
+
+All scripts are designed to run via:
+
+* User Scripts plugin
+* Cron jobs
+* Manual execution
+
+Each script includes a **USER CONFIGURATION section at the top** for easy setup.
+
+---
+
+## ⚠️ Notes
+
+* Scripts assume Docker-based Plex installation
+* Designed for Unraid paths (can be adapted)
+* Always test restores before relying on backups
+
+---
+
+## 📌 Roadmap
+
+* Unified restore script (hourly + GFS fallback)
+* Optional interactive restore selector
+* Backup monitoring / reporting enhancements
+
+[1]: https://github.com/alekdavis/PlexBackup?utm_source=chatgpt.com "GitHub - alekdavis/PlexBackup: PowerShell script for backing up and restoring Plex Media Server application data on Windows."
+
 
 
 ---
 
 ## ⚡ Quick Start
 
-1. Edit configuration at the top of each script
+### 1️⃣ Configure Scripts
 
-2. Run manually:
+Edit the **USER CONFIGURATION** section at the top of each script:
 
-```bash
-./plex-hourly-backup.sh
-```
-
-3. Schedule (recommended):
-
-* Hourly backups
+* Set your Plex paths
+* Confirm container name (`plex`)
+* Adjust backup locations if needed
 
 ---
 
-## ⏱ Recommended Schedule
+### 2️⃣ Test Manually (Recommended)
+
+Run each script once to confirm everything works:
+
+```bash
+./scripts/Plex_Hourly_Backup.sh
+./scripts/Plex_Daily_Backups.sh
+./scripts/Plex-Hourly-Healthcheck.sh
+```
+
+Test restore (safe mode):
+
+```bash
+./scripts/Plex_Hourly_Restore.sh   # Hourly (DRY_RUN=true) will look at most recent backup and work backwards looking for a valid backup. DryRun will state the most recent backup.
+./scripts/plex-gfs-restore.sh         # GFS restore (DRY_RUN=true) will look at most recent backup and work backwards looking for a valid backup.DryRun will state the most recent backup.
+```
+
+---
+
+### 3️⃣ Schedule Jobs (Unraid User Scripts or Cron)
+
+#### ⏱ Recommended Schedule
 
 ```cron
-# Hourly snapshots
-0 * * * *
+# Hourly snapshots (fast recovery)
+33 * * * * /path/to/scripts/Plex_Hourly_Backup.sh
 
+# Daily GFS backup (long-term retention)
+30 3 * * * /path/to/scripts/Plex_Daily_Backups.sh
+
+# Daily health check (validate all hourly backups). If these are good, then the GFS backups should be good.
+0 6 * * * /path/to/scripts/Plex-Hourly-Healthcheck.sh
 ```
+
+---
+
+### 4️⃣ Verify Backups
+
+* Check backup directories:
+
+  * `hourly/`
+  * `daily/`, `weekly/`, `monthly/`
+* Review logs for errors
+* Confirm health check reports **24/24 valid snapshots**
+
+---
+
+### 5️⃣ Perform a Test Restore (Highly Recommended)
+
+Dry run:
+
+```bash
+./scripts/Plex_Daily_Restore.sh
+```
+
+Actual restore:
+
+```bash
+# Edit script first:
+DRY_RUN=false
+```
+
+---
+
+## 🧠 Recommended Setup
+
+| Layer           | Purpose                           |
+| --------------- | --------------------------------- |
+| Hourly Backups  | Fast recovery (minimal data loss) |
+| GFS Backups     | Long-term protection              |
+| Health Check    | Ensures backups are valid         |
+| Restore Scripts | Safe recovery with validation     |
+
+---
+
+## ⚠️ Important
+
+* Always test restore before relying on backups
+* Keep backups on a different disk if possible
+* Monitor logs or enable notifications for failures
+
 
 ---
 
