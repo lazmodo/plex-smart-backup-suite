@@ -1,25 +1,111 @@
-# Restore Guide
+# 🔄 Plex Restore Guide
 
-## 🔁 Automatic Restore (Recommended)
-
-Run:
-
-```bash
-./plex-restore-validated.sh
-```
-
-This script will:
-
-* Scan hourly backups (newest → oldest)
-* Validate each snapshot using SQLite integrity checks
-* Restore the first valid backup found
-* Create an emergency backup before making changes
+This guide explains how to restore your Plex database using the scripts in this repository.
 
 ---
 
-## 🧪 Dry Run Mode
+## 🧠 Restore Strategy Overview
 
-The default mode. To test without making any changes, enable dry run:
+There are **three restore methods**, depending on your situation:
+
+| Method                  | Script                     | Use Case                         |
+| ----------------------- | -------------------------- | -------------------------------- |
+| ⚡ Hourly Restore        | `Plex_Hourly_Restore.sh`   | Fast recovery (most recent data) |
+| 🗄️ Daily Restore (GFS) | `Plex_Daily_Restore.sh`    | Corruption or long-term rollback |
+| 🎯 Targeted Restore     | `Plex-Restore-Specific.sh` | Restore a specific snapshot      |
+
+---
+
+## ⚡ Hourly Restore (Recommended First)
+
+This is the **fastest and safest recovery option**.
+
+### ▶️ Run:
+
+```bash
+./scripts/Plex_Hourly_Restore.sh
+```
+
+### ✅ What it does:
+
+* Scans hourly backups (newest → oldest). Ensure the HOURLY_BACKUP_MINUTE variable is set to the minute you run the backups. This ensures the newest is checked first and not last.
+* Validates each snapshot (SQLite integrity checks)
+* Restores the first valid backup
+* Automatically handles:
+
+  * Stopping Plex
+  * Emergency backup
+  * Restarting Plex
+
+---
+
+## 🗄️ Daily Restore (GFS Backups)
+
+Use this if:
+
+* Hourly backups are corrupted
+* You need to roll back further in time
+
+### ▶️ Run:
+
+```bash
+./scripts/Plex_Daily_Restore.sh
+```
+
+### ✅ What it does:
+
+* Scans daily backups (newest → oldest)
+* Extracts archive
+* Validates database before restore
+* Restores the first valid archive
+
+---
+
+## 🎯 Restore a Specific Backup
+
+Use this when you know exactly what you want to restore. You can either adjust the DEFAULT_MOD & DEFAULT_TARGET if running via UserScripts, or enter at command line
+
+---
+
+### 🔹 Hourly Snapshot
+
+```bash
+./scripts/Plex-Restore-Specific.sh hourly 14
+```
+
+---
+
+### 🔹 Daily Backup
+
+```bash
+./scripts/Plex-Restore-Specific.sh daily plex-db-2026-03-23.tar
+```
+
+---
+
+### ⚠️ Important
+
+This script:
+
+* ✔ Prepares the backup
+* ✔ Extracts if needed
+* ❌ Does NOT perform the restore
+
+After selecting a snapshot, use the appropriate restore script:
+
+```bash
+./scripts/Plex_Hourly_Restore.sh
+# or
+./scripts/Plex_Daily_Restore.sh
+```
+
+---
+
+## 🧪 Dry Run Mode (Safe Testing)
+
+All restore scripts support dry-run mode.
+
+Edit the script:
 
 ```bash
 DRY_RUN=true
@@ -27,88 +113,82 @@ DRY_RUN=true
 
 This will:
 
-* Perform validation checks
-* Show which snapshot *would* be restored
-* Exit safely without modifying anything
+* Validate backups
+* Show what would be restored
+* NOT modify your Plex database
 
 ---
 
-## 🛠 Manual Restore
+## 🛟 Emergency Backup (Automatic)
 
-If you prefer to restore manually:
-
-1. **Stop Plex**
-2. Copy backup files into:
-
-   ```
-   Plug-in Support/Databases
-   ```
-3. Restore:
-
-   * `com.plexapp.plugins.library.db`
-   * `com.plexapp.plugins.library.db-wal`
-   * `com.plexapp.plugins.library.db-shm`
-   * `com.plexapp.plugins.library.blobs.db`
-   * (and related WAL/SHM files if present)
-4. Restore `Preferences.xml`
-5. **Start Plex**
-
----
-
-## 🛟 Emergency Backup
-
-Before restoring, the script automatically creates a backup of your current state:
+Before any restore, the hourly & daily scripts both creates a backup:
 
 ```
-Backups/PlexDatabase/emergency/
+/Backups/PlexDatabase/emergency/
 ```
 
-This allows you to roll back if needed.
+This allows you to:
+
+* Roll back if needed
+* Recover from failed restore attempts
 
 ---
 
-## ⚠️ Important Notes
+## 🔍 Troubleshooting
 
-* Always restore **all related WAL files** (`-wal`, `-shm`)
-* Do not restore only the `.db` file
-* Ensure Plex is **stopped** before manual restore
-* WAL checkpointing is handled automatically by the script
+### ❌ No valid backup found
 
----
+* Run:
 
-## 🧠 How Validation Works
+```bash
+./scripts/Plex-Hourly-Healthcheck.sh
+```
 
-Each snapshot is tested using:
-
-* `PRAGMA quick_check;`
-* `PRAGMA integrity_check;`
-
-A backup is only used if **both checks return `ok`**, ensuring database consistency.
+* Check logs for corruption or missing files
 
 ---
 
-## ❗ Troubleshooting
+### ❌ Restore fails
 
-### No valid snapshot found
-
-* Check that backups exist in the hourly directory
-* Verify backup script is running successfully
-* Inspect logs for validation failures
-
-### Plex fails to start after restore
-
-* Restore from a different (older) snapshot
-* Check file permissions
-* Verify all WAL files were restored
+* Verify container name
+* Check database paths
+* Ensure permissions are correct
 
 ---
 
-## 🔄 Recommended Workflow
+### ❌ Plex won't start after restore
 
-1. Run restore script (dry run first)
-2. Confirm selected snapshot
-3. Run actual restore
-4. Verify Plex starts correctly
-5. Spot-check library integrity
+* Check logs:
+
+```bash
+docker logs plex
+```
+
+* Try another backup snapshot
 
 ---
+
+## ⚠️ Best Practices
+
+* Always test restores before relying on backups
+* Keep backups on a different disk if possible
+* Monitor logs or enable notifications
+* Run daily health checks
+
+---
+
+## 🧠 Recommended Recovery Order
+
+1. Try **Hourly Restore**
+2. Fall back to **Daily Restore**
+3. Use **Targeted Restore** if needed
+
+---
+
+## 🚀 Summary
+
+* Hourly backups = fast recovery
+* Daily backups = long-term protection
+* Validation = reliability
+
+Together, they provide a **complete Plex backup and recovery system**
