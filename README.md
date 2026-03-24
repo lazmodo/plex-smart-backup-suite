@@ -1,6 +1,6 @@
 # Plex Smart Backup Suite
 
-Fast, WAL-safe Plex backups with hourly snapshots, GFS rotation, and validated restore scripts. It is designed to have the plexdata and backup folders on SSDs. 
+Fast, WAL-safe Plex DB backups with hourly snapshots, GFS rotation, and validated restore scripts. It is designed to have the plexdata and backup folders on SSDs. 
 
 ---
 
