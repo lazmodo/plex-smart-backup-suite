@@ -233,7 +233,7 @@ This system ensures:
 
 * Minimal data loss (hourly snapshots)
 * Long-term protection (GFS backups)
-* Verified recoverability (health checks)
+* Verified recoverability & notification if backup has issue (health checks)
 * Safe restores (validated + rollback)
 
 Together, these provide a **complete Plex backup and recovery solution**
