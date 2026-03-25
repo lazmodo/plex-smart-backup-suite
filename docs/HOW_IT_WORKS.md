@@ -89,11 +89,23 @@ The system is built on three core layers:
   * Missing backups
   * Corrupted databases
 
+### 🔔 Notifications
+
+* Sends an Unraid notification **only if failures are detected**
+* Optional success notifications can be enabled in the script:
+
+  ```bash
+  NOTIFY_ON_SUCCESS=true
+  ```
+
+> Notifications are controlled via the `ENABLE_NOTIFICATIONS` and `NOTIFY_ON_SUCCESS` settings in the script.
+
 ### ✅ Benefits:
 
 * Ensures backups are actually usable
 * Detects corruption early
 * Prevents bad restores
+* Provides proactive alerting when issues occur
 
 ---
 
