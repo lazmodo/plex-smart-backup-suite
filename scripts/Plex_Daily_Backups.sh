@@ -185,7 +185,12 @@ fi
 # MONTHLY PROMOTION
 # -----------------------------
 
-if [[ $(date +%d) -eq 01 ]]; then
+DAY_OF_MONTH=$(date +%d)
+
+# Remove leading zero for safe numeric comparison
+DAY_OF_MONTH=$((10#$DAY_OF_MONTH))
+
+if [[ "$DAY_OF_MONTH" -eq "$MONTHLY_DAY" ]]; then
   cp "$ARCHIVE" "$DEST/monthly/plex-db-$MONTH.tar"
   log "Created monthly backup"
 fi
