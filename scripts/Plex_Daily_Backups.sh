@@ -34,6 +34,10 @@ DAILY_KEEP=7
 WEEKLY_KEEP=4
 MONTHLY_KEEP=6
 
+# Backup Days 
+MONTHLY_DAY=1 #Monthly backup day (1–28 recommended to avoid month-length issues)
+WEEKLY_DAY=7  # 1=Monday ... 7=Sunday
+
 # Features
 ENABLE_NOTIFICATIONS=true
 
@@ -54,6 +58,8 @@ WEEK=$(date +%G-week%V)
 MONTH=$(date +%Y-%m)
 
 TMP_DIR="$TMP_ROOT/tmp_plex_backup_$DATE"
+
+
 
 # Cleanup on exit
 cleanup_tmp() {
@@ -77,6 +83,11 @@ notify(){
       -i "normal"
   fi
 }
+
+#Verify monthly day is not an issue
+if (( MONTHLY_DAY < 1 || MONTHLY_DAY > 28 )); then
+  log "WARNING: MONTHLY_DAY should be between 1 and 28 to avoid month-length issues"
+fi
 
 # -----------------------------
 # PREPARE DIRECTORIES
@@ -165,7 +176,7 @@ log "Created $ARCHIVE"
 # WEEKLY PROMOTION
 # -----------------------------
 
-if [[ $(date +%u) -eq 7 ]]; then
+if [[ $(date +%u) -eq "$WEEKLY_DAY" ]]; then
   cp "$ARCHIVE" "$DEST/weekly/plex-db-$WEEK.tar"
   log "Created weekly backup"
 fi
