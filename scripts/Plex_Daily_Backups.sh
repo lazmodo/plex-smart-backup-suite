@@ -87,8 +87,14 @@ notify(){
 #Verify monthly day is not an issue
 if (( MONTHLY_DAY < 1 || MONTHLY_DAY > 28 )); then
   log "WARNING: MONTHLY_DAY should be between 1 and 28 to avoid month-length issues"
+else
+  log "Config → Monthly Day: $MONTHLY_DAY"
 fi
 #Verify weekly day is not an issue
+WEEKDAY_NAMES=("Monday" "Tuesday" "Wednesday" "Thursday" "Friday" "Saturday" "Sunday")
+
+WEEKDAY_NAME="${WEEKDAY_NAMES[$((WEEKLY_DAY-1))]}"
+
 if (( WEEKLY_DAY < 1 || WEEKLY_DAY > 7 )); then
   log "WARNING: WEEKLY_DAY must be between 1–7"
 else
