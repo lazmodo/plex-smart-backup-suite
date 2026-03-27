@@ -28,10 +28,12 @@ This is the **fastest and safest recovery option**.
 
 ### ✅ What it does:
 
-* Scans hourly backups (newest → oldest). Ensure the HOURLY_BACKUP_MINUTE variable is set to the minute you run the backups. This ensures the newest is checked first and not last.
+* Scans hourly backups (newest → oldest). Ensure the HOURLY_BACKUP_MINUTE variable in the script is set to the minute you run the hourly backups (e.g., if you run backups at :33 minute, set HOURLY_BACKUP_MINUTE=33). This ensures the newest backup is checked first.
 * Validates each snapshot (SQLite integrity checks)
 * Restores the first valid backup
 * Automatically handles:
+
+
 
   * Stopping Plex
   * Emergency backup
@@ -63,7 +65,8 @@ Use this if:
 
 ## 🎯 Restore a Specific Backup
 
-Use this when you know exactly what you want to restore. You can either adjust the DEFAULT_MOD & DEFAULT_TARGET if running via UserScripts, or enter at command line
+Use this when you know exactly what you want to restore. You can either adjust the `DEFAULT_MOD` and `DEFAULT_TARGET` variables if running via User Scripts, or pass them as command-line arguments.
+
 
 ---
 
