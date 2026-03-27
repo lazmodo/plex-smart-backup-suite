@@ -4,6 +4,8 @@
 
 Fast, WAL-safe Plex DB backups with hourly snapshots, GFS rotation, and validated restore scripts. This system protects your **Plex brain (database)**, not your **media files**. It is designed to have the plexdata and backup folders on SSDs. 
 
+> ⚠️ Without a Plex database backup, you lose your entire library organization, metadata, and watch history—even if all your media files are still intact.
+
 ---
 
 ## 🚀 Features
