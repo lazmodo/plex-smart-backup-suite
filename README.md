@@ -79,8 +79,6 @@ This project implements a **layered backup approach**:
 * **Validation layer**
   * Ensures backups are actually usable before restore
 
-> Plex does not provide a complete backup system out of the box, so combining multiple strategies is essential for reliable recovery. ([GitHub][1])
-
 See [Backup Strategy](/docs/BACKUP_STRATEGY.md) for details.
 
 ---
