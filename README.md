@@ -2,7 +2,7 @@
 [![Unraid Compatible](https://img.shields.io/badge/Unraid-Compatible-green?logo=unraid)](https://unraid.net/)
 [![Version](https://img.shields.io/badge/Version-2026.03.23-green.svg)](https://github.com/lazmodo/plex-smart-backup-suite/releases)
 
-Fast, WAL-safe Plex DB backups with hourly snapshots, GFS rotation, and validated restore scripts. It is designed to have the plexdata and backup folders on SSDs. 
+Fast, WAL-safe Plex DB backups with hourly snapshots, GFS rotation, and validated restore scripts. This system protects your **Plex brain (database)**, not your **media files**. It is designed to have the plexdata and backup folders on SSDs. 
 
 ---
 
