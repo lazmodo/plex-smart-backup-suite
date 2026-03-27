@@ -1,4 +1,6 @@
 # Plex Smart Backup Suite
+[![Unraid Compatible](https://img.shields.io/badge/Unraid-Compatible-green?logo=unraid)](https://unraid.net/)
+[![Version](https://img.shields.io/badge/Version-2026.03.23-green.svg)](https://github.com/lazmodo/plex-smart-backup-suite/releases)
 
 Fast, WAL-safe Plex DB backups with hourly snapshots, GFS rotation, and validated restore scripts. It is designed to have the plexdata and backup folders on SSDs. 
 
@@ -63,21 +65,23 @@ Fast, WAL-safe Plex DB backups with hourly snapshots, GFS rotation, and validate
 
 ---
 
-## 🧠 Backup Strategy
+## 📂 Backup Strategy
 
 This project implements a **layered backup approach**:
 
 * **Hourly snapshots**
 
   * Fast, lightweight, near real-time recovery
+   
 * **Daily GFS backups**
-
   * Reliable, portable, long-term storage
-* **Validation layer**
 
+* **Validation layer**
   * Ensures backups are actually usable before restore
 
 > Plex does not provide a complete backup system out of the box, so combining multiple strategies is essential for reliable recovery. ([GitHub][1])
+
+See `/docs/BACKUP_STRATEGY.md` for details.
 
 ---
 
@@ -174,7 +178,7 @@ Test restore (safe mode):
 
 ```bash
 ./scripts/Plex_Hourly_Restore.sh   # Hourly (DRY_RUN=true) will look at most recent backup and work backwards looking for a valid backup. DryRun will state the most recent backup.
-./scripts/plex-gfs-restore.sh         # GFS restore (DRY_RUN=true) will look at most recent backup and work backwards looking for a valid backup.DryRun will state the most recent backup.
+./scripts/Plex_Daily_Restore.sh         # GFS restore (DRY_RUN=true) will look at most recent backup and work backwards looking for a valid backup.DryRun will state the most recent backup.
 ```
 
 ---
@@ -258,15 +262,6 @@ Together, these create a **consistent live snapshot**, without stopping Plex.
 
 ---
 
-## 📂 Backup Strategy
-
-* Hourly → fast recovery (last 24 hours)
-* Restore script → automatic validation + fallback
-
-See `/docs/BACKUP_STRATEGY.md` for details.
-
----
-
 ## ⚠️ Important Notes
 
 * Do NOT remove WAL files (`-wal`, `-shm`)
@@ -277,9 +272,9 @@ See `/docs/BACKUP_STRATEGY.md` for details.
 
 ## 📖 Documentation
 
-* docs/HOW_IT_WORKS.md
-* docs/RESTORE_GUIDE.md
-* docs/BACKUP_STRATEGY.md
+* `docs/HOW_IT_WORKS.md` - Technical explanation
+* `docs/RESTORE_GUIDE.md` - How to restore
+* `docs/User-Scripts-Setup.md` - Unraid-specific setup
 
 ---
 
