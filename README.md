@@ -81,7 +81,7 @@ This project implements a **layered backup approach**:
 
 > Plex does not provide a complete backup system out of the box, so combining multiple strategies is essential for reliable recovery. ([GitHub][1])
 
-See `/docs/BACKUP_STRATEGY.md` for details.
+See [Backup Strategy](/docs/BACKUP_STRATEGY.md) for details.
 
 ---
 
@@ -145,8 +145,6 @@ Each script includes a **USER CONFIGURATION section at the top** for easy setup.
 * Unified restore script (hourly + GFS fallback)
 * Optional interactive restore selector
 * Backup monitoring / reporting enhancements
-
-[1]: https://github.com/alekdavis/PlexBackup?utm_source=chatgpt.com "GitHub - alekdavis/PlexBackup: PowerShell script for backing up and restoring Plex Media Server application data on Windows."
 
 
 
