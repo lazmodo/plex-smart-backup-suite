@@ -145,6 +145,7 @@ Each script includes a **USER CONFIGURATION section at the top** for easy setup.
 * Unified restore script (hourly + GFS fallback)
 * Optional interactive restore selector
 * Backup monitoring / reporting enhancements
+* Compression as config option in Plex_Daily_Backups.sh
 
 
 
