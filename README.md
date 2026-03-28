@@ -270,15 +270,16 @@ Together, these create a **consistent live snapshot**, without stopping Plex.
 
 ## 📖 Documentation
 
-* `docs/HOW_IT_WORKS.md` - Technical explanation
-* `docs/RESTORE_GUIDE.md` - How to restore
-* `docs/User-Scripts-Setup.md` - Unraid-specific setup
+* [How it works.md](/docs/HOW_IT_WORKS.md) - Technical explanation
+* [Restore Guide.md](/docs/RESTORE_GUIDE.md) - How to restore
+* [User Script Setup.md](/docs/User-Scripts-Setup.md)  - Unraid-specific setup
+* [Backup Strategy.md](/docs/BACKUP_STRATEGY.md) - Logic behind the backup schedule
 
 ---
 
 ## 🧩 Unraid Setup
 
-See: `examples/unraid-user-scripts.md`
+See: [User-Scripts-Setup](/docs/User-Scripts-Setup.md)
 
 ---
 
